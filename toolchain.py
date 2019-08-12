@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Tool for compiling iOS toolchain
 ================================
@@ -6,6 +6,7 @@ Tool for compiling iOS toolchain
 This tool intend to replace all the previous tools/ in shell script.
 """
 
+import contextlib
 import sys
 from sys import stdout
 from os.path import join, dirname, realpath, exists, isdir, basename
@@ -236,7 +237,7 @@ class Arch(object):
         ] + include_dirs)
         env["LDFLAGS"] = " ".join([
             "-arch", self.arch,
-            "--sysroot", self.sysroot,
+            #"--sysroot", self.sysroot,
             "-L{}/{}".format(self.ctx.dist_dir, "lib"),
             "-lsqlite3",
             self.version_min
@@ -248,7 +249,8 @@ class Arch64Simulator(Arch):
     sdk = "iphonesimulator"
     arch = "x86_64"
     triple = "x86_64-apple-darwin13"
-    version_min = "-miphoneos-version-min=8.0"
+    #version_min = "-miphoneos-version-min=8.0"
+    version_min = ""
     sysroot = sh.xcrun("--sdk", "iphonesimulator", "--show-sdk-path").strip()
 
 
@@ -256,7 +258,8 @@ class Arch64IOS(Arch):
     sdk = "iphoneos"
     arch = "arm64"
     triple = "aarch64-apple-darwin13"
-    version_min = "-miphoneos-version-min=8.0"
+    #version_min = "-miphoneos-version-min=8.0"
+    version_min = ""
     sysroot = sh.xcrun("--sdk", "iphoneos", "--show-sdk-path").strip()
 
 
@@ -1498,7 +1501,7 @@ Xcode:
                 "PYTHONOPTIMIZE": "2",
                 # "PIP_INSTALL_TARGET": ctx.site_packages_dir
             }
-            pip_path = sh.which("pip")
+            pip_path = sh.which("pip3")
             pip_args = []
             if len(sys.argv) > 2 and sys.argv[2] == "install":
                 pip_args = ["--isolated", "--ignore-installed", "--prefix", ctx.python_prefix]
@@ -1568,3 +1571,12 @@ Xcode:
             command(images_xcassets, args.image)
 
     ToolchainCL()
+
+@contextlib.contextmanager
+def current_directory(new_dir):
+    cur_dir = getcwd()
+    logger.info(''.join(('-> directory context ', new_dir)))
+    chdir(new_dir)
+    yield
+    logger.info(''.join(('<- directory context ', cur_dir)))
+    chdir(cur_dir)

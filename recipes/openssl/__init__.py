@@ -10,7 +10,7 @@ arch_mapper = {'i386': 'darwin-i386-cc',
 
 
 class OpensslRecipe(Recipe):
-    version = "1.0.2l"
+    version = "1.1.1b"
     url = "http://www.openssl.org/source/openssl-{version}.tar.gz"
     depends = ["hostopenssl"]
     libraries = ["libssl.a", "libcrypto.a"]
@@ -35,7 +35,7 @@ class OpensslRecipe(Recipe):
                 target,
                 _env=build_env)
         if target == 'iphoneos-cross':
-            sh.sed("-ie", "s!^CFLAG=.*!CFLAG={} {}!".format(build_env['CFLAGS'],
+            sh.sed("-ie", "s!^CNF_CFLAGS=.*!CNF_CFLAGS={} {}!".format(build_env['CFLAGS'],
                    " ".join(options_iphoneos)),
                    "Makefile")
             sh.sed("-ie", "s!static volatile sig_atomic_t intr_signal;!static volatile intr_signal;! ",

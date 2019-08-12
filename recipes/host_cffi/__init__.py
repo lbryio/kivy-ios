@@ -19,10 +19,10 @@ Cflags: -I${includedir}
 
 class HostCffiRecipe(Recipe):
     name = "host_cffi"
-    version = "1.11.5"
+    version = "1.12.1"
     archs = ["x86_64"]
     url = "https://pypi.python.org/packages/source/c/cffi/cffi-{version}.tar.gz"
-    depends = ["libffi", "host_setuptools", "pycparser"]
+    depends = ["hostlibffi", "host_setuptools", "pycparser"]
 
     def get_recipe_env(self, arch):
         sdk_path = sh.xcrun("--sdk", "macosx", "--show-sdk-path").strip()

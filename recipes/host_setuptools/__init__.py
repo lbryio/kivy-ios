@@ -6,39 +6,35 @@ import fnmatch
 import shutil
 
 
-class HostSetuptools(Recipe):
-    depends = ["openssl", "hostpython"]
+class HostSetuptoolsRecipe(Recipe):
+    depends = ["openssl", "hostpython3"]
+    name = "setuptools"
     archs = ["x86_64"]
-    #url = "setuptools"
-    version = "18.5"
-    url = "https://pypi.python.org/packages/source/s/setuptools/setuptools-{version}.tar.gz"
+    version = "41.0.1"
+    url = "https://pypi.python.org/packages/source/s/setuptools/setuptools-{version}.zip"
     cythonize = False
 
     '''
     def prebuild_arch(self, arch):
-        dest_dir = join(
-            self.ctx.dist_dir, 'hostpython',
-            'lib', 'python2.7', 'site-packages')
-        #hostpython = sh.Command(self.ctx.hostpython)
-        #sh.curl("-O",  "https://bootstrap.pypa.io/ez_setup.py")
-        #shprint(hostpython, "./ez_setup.py")
+        hostpython = sh.Command(self.ctx.hostpython)
+        sh.curl("-O",  "https://bootstrap.pypa.io/ez_setup.py")
+        shprint(hostpython, "./ez_setup.py")
         # Extract setuptools egg and remove .pth files. Otherwise subsequent
         # python package installations using setuptools will raise exceptions.
         # Setuptools version 28.3.0
         site_packages_path = join(
-            self.ctx.dist_dir, 'hostpython',
-            'lib', 'python2.7', 'site-packages')
+            self.ctx.dist_dir, 'hostpython3',
+            'lib', 'python3.7', 'site-packages')
         os.chdir(site_packages_path)
         with open('setuptools.pth', 'r') as f:
             setuptools_egg_path = f.read().strip('./').strip('\n')
             unzip = sh.Command('unzip')
-            shprint(unzip, setuptools_egg_path)
+            shprint(unzip, '-o', setuptools_egg_path)
         os.remove(setuptools_egg_path)
         os.remove('setuptools.pth')
         os.remove('easy-install.pth')
         shutil.rmtree('EGG-INFO')
-    '''
-    
+    '''    
     def install(self):
         import sh
         from toolchain import shprint
@@ -47,6 +43,6 @@ class HostSetuptools(Recipe):
         build_dir = self.get_build_dir(arch.arch)
         chdir(build_dir)
         hostpython = sh.Command(self.ctx.hostpython)
-        shprint(hostpython, "setup.py", "install", "--prefix", "{}/hostpython".format(self.ctx.dist_dir))
+        shprint(hostpython, "setup.py", "install", "--prefix", "{}/hostpython3".format(self.ctx.dist_dir))
     
-recipe = HostSetuptools()
+recipe = HostSetuptoolsRecipe()

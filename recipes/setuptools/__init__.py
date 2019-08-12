@@ -3,14 +3,14 @@ from toolchain import CythonRecipe
 
 class SetuptoolsRecipe(CythonRecipe):
     name = "setuptools"
-    version = "18.5"
-    url = "https://pypi.python.org/packages/source/s/setuptools/setuptools-{version}.tar.gz"
-    depends = ["python", "host_setuptools"]
+    version = "41.0.1"
+    url = "https://pypi.python.org/packages/source/s/setuptools/setuptools-{version}.zip"
+    depends = ["python3", "host_setuptools"]
     cythonize = False
 
     def get_recipe_env(self, arch):
         env = super(SetuptoolsRecipe, self).get_recipe_env(arch)
-        env["PYTHONPATH"] = self.get_build_dir(arch.arch) + "/iosbuild/lib/python2.7/site-packages"
+        env["PYTHONPATH"] = self.get_build_dir(arch.arch) + "/iosbuild/lib/python3.7/site-packages"
         return env
 
     def install(self):

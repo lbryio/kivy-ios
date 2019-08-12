@@ -3,7 +3,7 @@ from os.path import join
 import sh, os
 
 class AttrsRecipe(PythonRecipe):
-    version = "18.1.0"
+    version = "18.2.0"
     url = "https://pypi.python.org/packages/source/a/attrs/attrs-{version}.tar.gz"
     depends = ["python", "setuptools"]
     
@@ -13,8 +13,9 @@ class AttrsRecipe(PythonRecipe):
         os.chdir(build_dir)
         hostpython = sh.Command(self.ctx.hostpython)
         build_env = arch.get_env()
-        dest_dir = join(self.ctx.dist_dir, "root", "python")
+        dest_dir = join(self.ctx.dist_dir, "root", "python3")
         build_env['PYTHONPATH'] = join(dest_dir, 'lib', 'python2.7', 'site-packages')
-        shprint(hostpython, "setup.py", "install", "--prefix", dest_dir, _env=build_env)
+        build_env['PYTHONUSERBASE'] = join(self.ctx.dist_dir, "root", "python3");
+        shprint(hostpython, "setup.py", "install", "--user", _env=build_env)
 
 recipe = AttrsRecipe()

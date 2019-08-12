@@ -38,8 +38,8 @@ class PythonRecipe(Recipe):
              self.copy_file("ModulesSetup.openssl", "Modules/Setup.openssl")
              r = Recipe.get_recipe('openssl', self.ctx)
              openssl_build_dir = r.get_build_dir(arch.arch)
-             shprint(sh.sed, '-i.backup', 's#^SSL=.*#SSL={}#'.format(openssl_build_dir), "Modules/Setup.openssl")
-             shprint(sh.sed, '-i.backup', 's#^SSL_LIBS=.*#SSL_LIBS={}#'.format(join(self.ctx.dist_dir, "lib")), "Modules/Setup.openssl")
+             shprint(sh.sed, '-i.bak', 's#^SSL=.*#SSL={}#'.format(openssl_build_dir), "Modules/Setup.openssl")
+             shprint(sh.sed, '-i.bak', 's#^SSL_LIBS=.*#SSL_LIBS={}#'.format(join(self.ctx.dist_dir, "lib")), "Modules/Setup.openssl")
              os.system('cat Modules/Setup.openssl >> Modules/Setup.local')
              sh.rm("Modules/Setup.openssl")
 

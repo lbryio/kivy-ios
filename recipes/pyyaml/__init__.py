@@ -4,9 +4,9 @@ import sh
 from toolchain import PythonRecipe, shprint
 
 class PyYamlRecipe(PythonRecipe):
-    version = "3.12"
+    version = "4.2b1"
     url = "https://pypi.python.org/packages/source/P/PyYAML/PyYAML-{version}.tar.gz"
-    depends = ["python"]
+    depends = ["python3"]
 
     def install(self):
         arch = list(self.filtered_archs)[0]
@@ -14,8 +14,8 @@ class PyYamlRecipe(PythonRecipe):
         os.chdir(build_dir)
         hostpython = sh.Command(self.ctx.hostpython)
         build_env = arch.get_env()
-        dest_dir = os.path.join(self.ctx.dist_dir, "root", "python")
-        build_env['PYTHONPATH'] = os.path.join(dest_dir, 'lib', 'python2.7', 'site-packages')
+        dest_dir = os.path.join(self.ctx.dist_dir, "root", "python3")
+        build_env['PYTHONPATH'] = os.path.join(dest_dir, 'lib', 'python3.7', 'site-packages')
         shprint(hostpython, "setup.py", "install", "--prefix", dest_dir, _env=build_env)
 
 recipe = PyYamlRecipe()

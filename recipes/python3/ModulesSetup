@@ -19,7 +19,7 @@ _datetime _datetimemodule.c
 _elementtree _elementtree.c \
     -I$(srcdir)/Modules/expat
     -DHAVE_EXPAT_CONFIG_H -DUSE_PYEXPAT_CAPI
-_hashlib _hashopenssl.c -lssl -DUSE_SSL
+#_hashlib _hashopenssl.c -lssl -DUSE_SSL
 _heapq _heapqmodule.c
 _json _json.c
 _lsprof _lsprof.o rotatingtree.c
@@ -47,7 +47,7 @@ _sqlite3 -I$(srcdir)/Modules/_sqlite -DMODULE_NAME='\"sqlite3\"' -DSQLITE_OMIT_L
     _sqlite/row.c \
     _sqlite/statement.c \
     _sqlite/util.c
-_ssl _ssl.c -lssl -DUSE_SSL
+#_ssl _ssl.c -lssl -DUSE_SSL
 _struct _struct.c
 array arraymodule.c
 audioop audioop.c

@@ -5,8 +5,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class LibffiRecipe(Recipe):
+class HostlibffiRecipe(Recipe):
     version = "3.2.1"
+    name = "hostlibffi"
     url = "ftp://sourceware.org/pub/libffi/libffi-{version}.tar.gz"
     library = "build/Release-{arch.sdk}/libffi.a"
     include_per_arch = True
@@ -63,4 +64,4 @@ class LibffiRecipe(Recipe):
     def postbuild_arch(self, arch):
         pass
 
-recipe = LibffiRecipe()
+recipe = HostlibffiRecipe()

@@ -9,17 +9,18 @@ def ensure_dir(filename):
         makedirs(filename)
 
 class HostOpenSSLRecipe(Recipe):
-    version = "1.0.2l"
+    version = "1.1.1b"
+    url_version = '1.1.1b'
     url = "http://www.openssl.org/source/openssl-{version}.tar.gz"
     archs = ["x86_64"]
     libraries = ["libssl.a", "libcrypto.a"]
     include_dir = "include"
 
     def build_x86_64(self):
-	arch = self.archs[0]
+        arch = self.archs[0]
         sdk_path = sh.xcrun("--sdk", "macosx", "--show-sdk-path").strip()
         dist_dir = join(self.ctx.dist_dir,"hostopenssl")
-        print("OpenSSL for host to be installed at: {}").format(dist_dir)
+        print("OpenSSL for host to be installed at: {}".format(dist_dir))
         sh.perl(join(self.build_dir, "Configure"), "darwin64-x86_64-cc", 
                      "--openssldir={}".format(dist_dir),
                      "--prefix={}".format(dist_dir))
@@ -28,9 +29,9 @@ class HostOpenSSLRecipe(Recipe):
         shprint(sh.make, "-j4", "build_libs")
 
     def install_include(self):
-	arch = self.archs[0]
-	print("Custom include file install...")
-	print("Dist dir = {}".format(self.ctx.dist_dir))
+        arch = self.archs[0]
+        print("Custom include file install...")
+        print("Dist dir = {}".format(self.ctx.dist_dir))
         dest_dir = join(self.ctx.dist_dir,"hostopenssl","include")
         if exists(dest_dir):
             shutil.rmtree(dest_dir)

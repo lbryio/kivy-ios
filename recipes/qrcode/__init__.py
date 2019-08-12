@@ -13,7 +13,7 @@ class QrcodeRecipe(PythonRecipe):
         os.chdir(build_dir)
         hostpython = sh.Command(self.ctx.hostpython)
         build_env = arch.get_env()
-        dest_dir = join(self.ctx.dist_dir, "root", "python")
+        dest_dir = join(self.ctx.dist_dir, "root", "python3")
         build_env['PYTHONPATH'] = join(dest_dir, 'lib', 'python2.7', 'site-packages')
         shprint(hostpython, "setup.py", "install", "--prefix", dest_dir, _env=build_env)
 

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class Python3Recipe(Recipe):
     version = "3.7.1"
     url = "https://www.python.org/ftp/python/{version}/Python-{version}.tgz"
-    depends = ["hostpython3", "libffi", "openssl"]
+    depends = ["hostpython3", "libffi", "openssl", "sqlite3"]
     library = "libpython3.7m.a"
     pbx_libraries = ["libz", "libbz2", "libsqlite3"]
 
@@ -31,6 +31,39 @@ class Python3Recipe(Recipe):
         self.copy_file("ModulesSetup", "Modules/Setup.local")
         self.append_file("ModulesSetup.mobile", "Modules/Setup.local")
         self.apply_patch("xcompile.patch")
+        if "openssl.build_all" in self.ctx.state:
+             self.copy_file("ModulesSetup.openssl", "Modules/Setup.openssl")
+             r = Recipe.get_recipe('openssl', self.ctx)
+             openssl_build_dir = r.get_build_dir(arch.arch)
+             shprint(sh.sed, '-i.bak', 's#^SSL=.*#SSL={}#'.format(openssl_build_dir), "Modules/Setup.openssl")
+             shprint(sh.sed, '-i.bak', 's#^SSL_LIBS=.*#SSL_LIBS={}#'.format(join(self.ctx.dist_dir, "lib")), "Modules/Setup.openssl")
+             os.system('cat Modules/Setup.openssl >> Modules/Setup.local')
+             sh.rm("Modules/Setup.openssl")
+             
+        # Replace sqlite3 paths in setup.py
+        # /usr/local/include/sqlite3
+        r = Recipe.get_recipe('sqlite3', self.ctx)
+        sqlite3_build_dir = r.get_build_dir(arch.arch)
+        
+        shprint(sh.sed,
+                '-i.bak',
+                's#/usr/local/include/sqlite3#{}#g'.format(sqlite3_build_dir),
+                join(self.get_build_dir(arch.arch), "setup.py"))
+        
+        # sqlite_inc_paths = []
+        shprint(sh.sed,
+                '-i.bak',
+                's#sqlite_inc_paths = \[\]#sqlite_inc_paths = \[\'{}\'\]#g'.format(sqlite3_build_dir),
+                join(self.get_build_dir(arch.arch), "setup.py"))
+        
+        # sqlite_lib_dir
+        # os.path.join(sqlite_incdir, '..', 'lib64')
+        shprint(sh.sed,
+                '-i.bak',
+                's#os.path.join(sqlite_incdir, \'..\', \'lib64\')#\'{}\'#g'.format(sqlite3_build_dir),
+                join(self.get_build_dir(arch.arch), "setup.py"))
+        
+        
         self.set_marker("patched")
 
     def get_build_env(self, arch):
@@ -49,11 +82,16 @@ class Python3Recipe(Recipe):
         elif py_arch == "arm64":
             py_arch = "aarch64"
         prefix = join(self.ctx.dist_dir, "root", "python3")
+        
+        # openssl bits
+        r = Recipe.get_recipe('openssl', self.ctx)
+        openssl_build_dir = r.get_build_dir(arch.arch)
+        
         shprint(configure,
                 "CC={}".format(build_env["CC"]),
                 "LD={}".format(build_env["LD"]),
                 "CFLAGS={}".format(build_env["CFLAGS"]),
-                "LDFLAGS={} -undefined dynamic_lookup".format(build_env["LDFLAGS"]),
+                "LDFLAGS={} -miphoneos-version-min=8.0 -undefined dynamic_lookup".format(build_env["LDFLAGS"]),
                 # "--without-pymalloc",
                 "ac_cv_file__dev_ptmx=yes",
                 "ac_cv_file__dev_ptc=no",
@@ -82,6 +120,7 @@ class Python3Recipe(Recipe):
                 "ac_cv_func_sched_setscheduler=no",
                 "ac_cv_func_sched_setparam=no",
                 "ac_cv_func_clock_gettime=no",
+                "--with-openssl={}".format(openssl_build_dir),
                 "--host={}-apple-ios".format(py_arch),
                 "--build=x86_64-apple-darwin",
                 "--prefix={}".format(prefix),
