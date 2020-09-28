@@ -1,42 +1,46 @@
-from toolchain import PythonRecipe, shprint
+from kivy_ios.toolchain import PythonRecipe, shprint
 from os.path import join
 import sh, os
 
 class LbryRecipe(PythonRecipe):
-    version = "v0.20.0rc10"
+    version = "f7eed62"
     url = "https://github.com/lbryio/lbry/archive/{version}.tar.gz"
     depends = [
         "python",
-        "setuptools",
-        "twisted",
-        "cryptography",
+        "ios",
+        "pyobjus",
+        "kivy",
+        
+        # install_requires dependencies
+        "aiohttp",
+        "aioupnp",
         "appdirs",
-        "argparse",
-        "docopt",
+        "async-timeout",
         "base58",
+        "chardet",
+        "coincurve",
         "colorama",
-        "dnspython",
+        "cryptography",
+        "defusedxml",
+        "docopt",
         "ecdsa",
-        "envparse",
-        "jsonrpc",
-        "jsonrpclib",
+        "hachoir",
         "keyring",
-        "lbryschema",
-        "lbryum",
-        "miniupnpc",
+        "mock",
+        "msgpack",
         "pbkdf2",
+        "prometheus_client",
+        "protobuf",
+        "pylru",
         "pyyaml",
-        "pygithub",
-        "qrcode",
-        "requests",
-        "service_identity",
-        "six",
-        "slowaes",
-        "txjson-rpc",
-        "wsgiref",
-        "zope_interface",
-        "treq"
+        "six"
     ]
+    
+    def prebuild_arch(self, arch):
+        if self.has_marker("patched"):
+            return
+        self.apply_patch("setup_override.patch")
+        self.set_marker("patched")
     
     def install(self):
         arch = list(self.filtered_archs)[0]
@@ -44,8 +48,8 @@ class LbryRecipe(PythonRecipe):
         os.chdir(build_dir)
         hostpython = sh.Command(self.ctx.hostpython)
         build_env = arch.get_env()
-        dest_dir = join(self.ctx.dist_dir, "root", "python")
-        build_env['PYTHONPATH'] = join(dest_dir, 'lib', 'python2.7', 'site-packages')
+        dest_dir = join(self.ctx.dist_dir, "root", "python3")
+        build_env['PYTHONPATH'] = join(dest_dir, 'lib', 'python3.8', 'site-packages')
         shprint(hostpython, "setup.py", "install", "--prefix", dest_dir, _env=build_env)
 
 recipe = LbryRecipe()
