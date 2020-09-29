@@ -6,10 +6,11 @@ class LbryRecipe(PythonRecipe):
     version = "f7eed62"
     url = "https://github.com/lbryio/lbry/archive/{version}.tar.gz"
     depends = [
+        "openssl",
         "python",
         "ios",
         "pyobjus",
-        "kivy",
+        "sdl2",
         
         # install_requires dependencies
         "aiohttp",
@@ -17,6 +18,7 @@ class LbryRecipe(PythonRecipe):
         "appdirs",
         "async-timeout",
         "base58",
+        "certifi",
         "chardet",
         "coincurve",
         "colorama",
