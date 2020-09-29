@@ -11,6 +11,7 @@ class LbryRecipe(PythonRecipe):
         "ios",
         "pyobjus",
         "sdl2",
+        "setuptools",
         
         # install_requires dependencies
         "aiohttp",
