@@ -3,7 +3,7 @@ from os.path import join
 import sh, os
 
 class LbryRecipe(PythonRecipe):
-    version = "f7eed62"
+    version = "v0.82.0"
     url = "https://github.com/lbryio/lbry/archive/{version}.tar.gz"
     depends = [
         "openssl",
